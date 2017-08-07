@@ -16,14 +16,60 @@ export class HomePage {
     this.initMap();
   }
 
-  initMap(){
-    let latLng = new google.maps.LatLng(-34.9290, 138.6010);
-    let mapOptions = {
-      center : latLng,
-      zoom : 15,
-      mapTypeId : google.maps.MapTypeId.ROADMAP
+  placeMarker(latLng, map){
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: map,
+      title: 'Hello World!'
+    });
+
+  }
+
+  initMap() {
+    let latLngStart = new google.maps.LatLng(5.9549, 80.5550);
+    let mapOptionsStart = {
+      center: latLngStart,
+      zoom: 15,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
-    this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
+
+    this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptionsStart);
+
+    var pathCoordinates = [
+      {lat:5.9549, lng:80.5550},
+      {lat: 6.0535, lng: 80.2210}
+    ];
+    var path = new google.maps.Polyline({
+      path: pathCoordinates,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+    var myCoord = [
+      new google.maps.LatLng(5.9549, 80.5550),
+      new google.maps.LatLng(6.0535, 80.2210)
+    ];
+
+
+    this.placeMarker(myCoord[0], this.map);
+    this.placeMarker(myCoord[1], this.map);
+
+    // BEGIN: Snap to road
+    var service = new google.maps.DirectionsService(), polys, snap_path=[];
+    path.setMap(this.map);
+    for(var j = 0; j < myCoord.length-1; j++){
+      service.route({origin: myCoord[j],destination: myCoord[j+1],
+        travelMode: google.maps.TravelMode.DRIVING}, function(result, status) {
+        if(status == google.maps.DirectionsStatus.OK) {
+          snap_path = snap_path.concat(result.routes[0].overview_path);
+          path.setPath(snap_path);
+        }
+      });
+    }
   }
+
+
 }
