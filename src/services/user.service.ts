@@ -14,7 +14,7 @@ export class UserService {
     let email = "cds@gmail.com";
 
     return new Promise((resolve, reject) => {
-        this.http.post('http://localhost:8080/geoConnector/rest/geo/users', {name: name, email: email}, {})
+        this.http.post('http://192.168.8.101:8080/geoConnector/rest/geo/users', {name: name, email: email}, {})
           .then(data => {
             resolve(data);
 

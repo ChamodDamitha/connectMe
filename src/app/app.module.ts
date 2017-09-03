@@ -13,6 +13,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { IonicStorageModule } from '@ionic/storage';
 import {HTTP} from "@ionic-native/http";
 
+
 @NgModule({
   declarations: [
     MyApp,
