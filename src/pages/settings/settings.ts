@@ -14,10 +14,10 @@ export class SettingsPage {
 
   constructor(public navCtrl: NavController, private userService: UserService, public loadingCtrl: LoadingController,
               private toastCtrl: ToastController) {
-    this.init();
+    this.setLoggedUserDetails();
   }
 
-  init() {
+  setLoggedUserDetails() {
     this.userService.getLoggedUserName().then(userName => {
       this.name = userName;
     });
@@ -27,10 +27,10 @@ export class SettingsPage {
   }
 
   signin() {
-    // let loader = this.loadingCtrl.create({
-    //   content: "Signing..."
-    // });
-    // loader.present();
+    let loader = this.loadingCtrl.create({
+      content: "Signing..."
+    });
+    loader.present();
     this.userService.signin()
       .then(data => {
         console.log("signed promise");
@@ -39,6 +39,8 @@ export class SettingsPage {
           duration: 3000
         });
         toast.present();
+        this.setLoggedUserDetails();
+        loader.dismiss();
       })
       .catch(error => {
         console.log("not signed error");
@@ -47,6 +49,7 @@ export class SettingsPage {
           duration: 3000
         });
         toast.present();
+        loader.dismiss();
       });
   }
 

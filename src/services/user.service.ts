@@ -1,60 +1,33 @@
 import {Storage} from '@ionic/storage';
 import {Injectable, NgModule} from '@angular/core';
-import {Http, Headers} from '@angular/http';
-import {ToastController} from 'ionic-angular';
 import "rxjs/add/operator/map";
-import {createUrl} from "google-maps";
+import {HttpService} from "./http.service";
 
 @NgModule()
 @Injectable()
 export class UserService {
-  constructor(private storage: Storage, private http: Http, private toastCtrl: ToastController) {
-  }
-
-
-  createUrl(url, params) {
-    let keys = Object.keys(params);
-    if (keys.length > 0) {
-      url += "?" + keys[0] + "=" + params[keys[0]];
-    }
-    for (let i = 1; i < keys.length; i++) {
-      url += "&" + keys[i] + "=" + params[keys[i]];
-    }
-    return url;
+  constructor(private storage: Storage, private httpService : HttpService) {
   }
 
   signin(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let headers = new Headers();
-      headers.append("Content-Type", "text/json");
-
       let params = {
         name: "cds",
         email: "cds@gmail.com"
       };
+      let url = 'http://192.168.8.100:8080/geoConnector/rest/geo/users';
 
-      let url = this.createUrl('http://192.168.8.100:8080/geoConnector/rest/geo/users', params);
-
-      this.http.post(url, headers)
-        .map(res => res.json())
-        .subscribe(
-          // console.log(data);
-          response => {
-            console.log("Success Response" + response);
-            this.storage.set("user_name", params.name);
-            this.storage.set("user_email", params.email);
-            resolve(response);
-          },
-          error => {
-            console.log("Error happened" + error);
-            this.storage.set("user_name", params.name);
-            this.storage.set("user_email", params.email);
-            reject(error);
-          },
-          function () {
-            console.log("the subscription is completed");
-          }
-        );
+      this.httpService.post(url, params)
+        .then(data => {
+          console.log("Success Response" + data);
+          this.storage.set("user_name", params.name);
+          this.storage.set("user_email", params.email);
+          resolve(data);
+        })
+        .catch(error => {
+          console.log("Error happened" + error);
+          reject(error);
+        });
     });
   }
 
